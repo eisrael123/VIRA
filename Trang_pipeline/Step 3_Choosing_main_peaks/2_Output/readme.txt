@@ -1,0 +1,1 @@
+For this output, I use the main peaks in BRRF1-transfected sample for the next step

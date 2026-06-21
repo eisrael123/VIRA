@@ -1,0 +1,10 @@
+[project]
+name = "mcpserver"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "gget>=0.30.6",
+    "mcp[cli]>=1.27.2",
+]
