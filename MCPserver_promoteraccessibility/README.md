@@ -14,8 +14,8 @@ plotting scripts have been consolidated into one.
 | 4 | `pipeline/step4_extract_tpm.py` | DESeq2 `.xlsx` + main peaks | `*_induced/_suppressed/_nonsig.txt` (6-col plot inputs) + gene lists |
 | 5 | `pipeline/step5_plot.py` | plot inputs + insertion bigwigs | 9 PNG figures |
 
-`pipeline/run_pipeline.py` orchestrates all of it; `server.py` exposes it as a
-single MCP tool, `run_promoter_accessibility_pipeline`.
+`pipeline/run_pipeline.py` orchestrates all of it; `server.py` exposes MCP tools
+that launch and monitor the pipeline as a background job.
 
 ## Install
 
@@ -67,6 +67,17 @@ Outputs land under `pipeline_output/step2`, `step3`, `step4`, and
 uv run mcp dev server.py     # open the MCP Inspector to call the tool
 uv run python server.py      # stdio server for an MCP client
 ```
+
+The MCP server exposes individual step tools so an AI agent can run the pipeline
+piece-by-piece and pass outputs forward:
+
+- `start_step2_tss_peaks(...)` launches Step 2 and writes `Matched_*` / `Unmatched_*`.
+- `start_step3_main_peaks(matched_bed=...)` launches Step 3 and writes `Output_main_PEAKS_*`.
+- `start_step4_extract_tpm(deseq2_xlsx=..., main_peaks=...)` launches Step 4 and writes the three Step-5 plot inputs plus gene lists.
+- `start_step5_plot(induced_bed=..., suppressed_bed=..., nonsig_bed=...)` launches Step 5 plotting.
+- `check_pipeline_status(job_id)` polls any background step job.
+- `read_pipeline_log(job_id)` reads progress/errors from any background step job.
+- `list_pipeline_outputs(output_dir)` lists generated files and figures.
 
 Tunable parameters (defaults match the original scripts): `tss_cutoff=100`,
 `ts_cutoff=50`, `cluster_distance=100`, `distinct_distance=200`, `log2fc=0.5`,
